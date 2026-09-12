@@ -4,9 +4,14 @@ Azərbaycan gəncləri üçün inkişaf və imkanlar platforması. MIT lisenziya
 
 ## İşləyən axınlar
 
+- Arzu Kompası qeydiyyatın bir hissəsidir: 3 qısa cavab, iş/bacarıq/maraq seçimi, kimlik cümləsi, peşə bürcü və 4 həftəlik plan → "Profilimi yarat". Səyahəti keçmədən qeydiyyatdan keçən istifadəçi ilk girişdə profilini kompasla qurmağa yönləndirilir.
+- İnsan mərkəzli profil: kimlik cümləsi, bacarıq və maraqlar, seçilmiş yol və uyğunluq, işarələnən 4 həftəlik plan, digər yollar, LinkedIn başlığı və müsahibə sualları, profil gücü göstəricisi. "Kompası yenilə" səyahəti profil məlumatları ilə doldurulmuş açır; nəticə profilin boş sahələrini doldurur, bacarıqları birləşdirir, istifadəçinin yazdığını əvəz etmir.
 - Davamlı hesab/profil, saxlanan imkanlar, təşkilatları izləmə.
 - İmkan axtarışı, kateqoriya filtri, müraciət, şəxsi status tarixçəsi, geri götürmə.
 - Təşkilat profili, elan və tədbir yaratma; idarəçi tərəfindən yayımlama/arxivləşdirmə.
+- İşəgötürən paneli (`#/company`): VÖEN ilə şirkət profili, admin təsdiqi, kataloq profilinə sahiblik müraciəti, holdinq (ana şirkət) bağlantısı, komanda rolları (sahib · işə qəbul mütəxəssisi · müşahidəçi), KPI və başlanğıc addımları.
+- Elan sihirbazı: əsas məlumat → detallar (bacarıqlar, maaş) → ön seçim sualları (bəli/xeyr, variantlı, açıq; eleyici cavab gizli saxlanır) → önizləmə. Qaralama saxlanır; təsdiqlənmiş şirkətin elanı dərhal, digərləri admin yoxlamasından sonra yayımlanır. Pulsuz planda eyni vaxtda `BURA_FREE_JOB_LIMIT` (standart 5) aktiv elan; bağlama/yenidən açma, baxış sayı.
+- Müraciət və ATS: razılıq, ön seçim cavabları və eleyici qiymətləndirmə, profil + Arzu Kompası snapshot-u, bacarıq uyğunluğu faizi. Mərhələ lövhəsi (Yeni → Baxılır → Müsahibə → Təklif → Qəbul / Rədd), axtarış və filtrlər, qiymət, komanda qeydləri, denetim izi (`application_events`), toplu köçürmə, CSV ixracı, namizədə bildiriş.
 - Təşkilat sahibinə məxsus müraciətlər və iştirakçı siyahısı; status yeniləməsi və istifadəçi bildirişi.
 - Tutum nəzarəti ilə tədbir qeydiyyatı, bilet, ləğvetmə.
 - Dərslər, serverdə yoxlanan suallar, irəliləyiş, PDF tamamlama sertifikatı.
@@ -26,6 +31,8 @@ Azərbaycan gəncləri üçün inkişaf və imkanlar platforması. MIT lisenziya
 
 - `web/`: Vite + vanilla JavaScript/CSS, əlçatan native form və dialoglar.
 - `server/handler.mjs`: Web Request/Response API və bütün giriş icazələri.
+- `server/company.mjs`, `web/company.js`: işəgötürən paneli, elan sihirbazı və ATS (ayrıca yüklənən chunk). Sxem dəyişikliyi `drizzle/0001_company_ats.sql` — yalnız yeni cədvəl/sütun/indeks əlavə edir; tətbiqdən əvvəl `npm run db:remote` (libSQL) və ya Sites migrations işə düşməlidir.
+- `web/pusula.js`, `web/pusula.css`: Arzu Kompası (Shadow DOM, ayrıca yüklənən chunk). `server/pusula.mjs`: onun AI istemləri. Nəticə `documents` cədvəlində `compass:<userId>` sənədi kimi saxlanır (`POST /api/compass`, `POST /api/compass/plan`, `GET /api/me` → `compass`); yeni migration tələb etmir. `/api/pusula` girişsiz işləyir, eyni `OPENAI_API_KEY`/`OPENAI_MODEL` istifadə edir, IP üzrə saatda 40 sorğu ilə məhdudlaşır; açar yoxdursa səyahət "nümunə nəticə" qeydi ilə ehtiyat məzmunla davam edir.
 - `db/schema.ts`, `drizzle/`: versiyalı SQLite/D1 sxemi. SQL migration faylları ilk tətbiqdən sonra dəyişdirilməməlidir.
 - `server/worker.mjs`: Sites Worker, SIWC tərəfindən verilən şəxsiyyət, D1 `DB` binding.
 - `server/dev.mjs`: local Node 24 + SQLite + Vite. Local test hesabları; prod SIWC başlıqlarına etibar etmir.

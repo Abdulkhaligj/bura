@@ -3,3 +3,9 @@ Thumbs.db
 *.tmp
 *.swp
 ~$*.docx
+node_modules/
+.local/
+build/
+dist/
+.env
+.claude/
