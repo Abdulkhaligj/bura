@@ -1,30 +1,66 @@
-# BURA Platform — Functional Requirements
+# BURA
 
-BURA is a youth development and opportunity platform designed for Azerbaijan. It brings jobs, internships, volunteering, freelance opportunities, events, learning, university career centres, student communities, company reviews, salary insights, CV tools, and interview practice into one product.
+Azərbaycan gəncləri üçün inkişaf və imkanlar platforması. MIT lisenziyalı tətbiq kodu; Youthall, Glassdoor və digər platformaların məxfi mənbə kodu deyil.
 
-This repository contains the baseline Functional Requirements Document (FRD) for product, UX/UI, frontend, backend, QA, moderation, and partnership teams.
+## İşləyən axınlar
 
-## Documents
+- Davamlı hesab/profil, saxlanan imkanlar, təşkilatları izləmə.
+- İmkan axtarışı, kateqoriya filtri, müraciət, şəxsi status tarixçəsi, geri götürmə.
+- Təşkilat profili, elan və tədbir yaratma; idarəçi tərəfindən yayımlama/arxivləşdirmə.
+- Təşkilat sahibinə məxsus müraciətlər və iştirakçı siyahısı; status yeniləməsi və istifadəçi bildirişi.
+- Tutum nəzarəti ilə tədbir qeydiyyatı, bilet, ləğvetmə.
+- Dərslər, serverdə yoxlanan suallar, irəliləyiş, PDF tamamlama sertifikatı.
+- CV redaktəsi, şəxsi hesabda saxlama və Azərbaycan hərfləri ilə PDF.
+- Müsahibə sualları və saxlanan məşqlər; optional server-side OpenAI adapteri.
+- Anonim ictimai rəy proyeksiyası, maaş paylaşımı və məcburi moderasiya.
+- Kreditlə çəkilən orta bal və Pomodoro.
+- 390/768/desktop ölçüləri üçün responsive görünüş.
 
-- [English FRD](docs/BURA_FRD_EN.md)
-- [Azerbaijani FRD — Word](docs/BURA_FRD_AZ.docx)
+## Hazır olmayan xarici xidmətlər
 
-## Requirements summary
+3 və 5 AZN planları konseptdir: checkout, ödəniş webhook-u, entitlement sistemi və real tərəfdaş kuponları aktiv deyil. AI açarı olmadıqda təhlil bağlıdır; saxta nəticə göstərilmir. Video/robot müsahibə, real mentor rezervasiyası, şirkət inteqrasiyaları, bütün karyera mərkəzlərinin təsdiqli kataloqu, oyunlar və mükafatlar hələ daxil deyil. Cari buraxılış işlək pilotdur, tam kommersiya buraxılışı deyil.
 
-- 58 functional requirements
-- 13 business rules
-- 12 non-functional requirements
-- 83 uniquely identified requirements in total
-- P0 pilot, P1 expansion and monetisation, P2 ecosystem roadmap
+Şirkət kataloqu tərəfdaşlıq iddiası daşımır. Test elanları yalnız BURA Sınaq Studiyası altındadır. İstifadəçi məlumatları brauzer yaddaşında deyil, server bazasındadır.
 
-## Product position
+## Quruluş
 
-BURA does not guarantee employment. It helps young people build a profile, develop skills, discover verified opportunities, manage applications, and connect with universities, communities, and employers.
+- `web/`: Vite + vanilla JavaScript/CSS, əlçatan native form və dialoglar.
+- `server/handler.mjs`: Web Request/Response API və bütün giriş icazələri.
+- `db/schema.ts`, `drizzle/`: versiyalı SQLite/D1 sxemi. SQL migration faylları ilk tətbiqdən sonra dəyişdirilməməlidir.
+- `server/worker.mjs`: Sites Worker, SIWC tərəfindən verilən şəxsiyyət, D1 `DB` binding.
+- `server/dev.mjs`: local Node 24 + SQLite + Vite. Local test hesabları; prod SIWC başlıqlarına etibar etmir.
+- `api/index.mjs`: Vercel Node Web Handler adapteri; libSQL bazası tələb edir.
 
-## Status
+## Lokal inkişaf
 
-Version 1.0 — baseline for review and approval, dated 12 September 2026.
+```sh
+npm ci
+npm test
+npm run dev
+```
 
-## Licence
+Local baza `.local/bura.sqlite` faylındadır, git-ə daxil edilmir. Local qeydiyyat ən az 10 simvol şifrə tələb edir. Local hesabların e-poçt təsdiqi/recovery xidməti yoxdur; açıq kommersiya buraxılışı üçün managed auth inteqrasiyası tələb olunur.
 
-The documentation in this repository is licensed under [CC BY 4.0](LICENSE).
+`web/qa.html` yalnız dev serverdə telefon/planşet iframe yoxlaması üçündür, istehsal build-inə daxil edilmir.
+
+## Sites
+
+Mövcud project ID `.openai/hosting.json` daxilində saxlanır. `npm run build` Worker və sxem migrations çıxarır. Runtime `BURA_OWNER_EMAIL` yalnız layihə sahibinin təsdiqli e-poçtuna təyin olunur. SIWC mənbə başlıqları yalnız Sites dispatcher daxilində etibarlıdır. Vercel/local adapter bunlara etibar etmir. Mövcud giriş siyasəti public-dir: kataloq açıqdır, şəxsi API-lər SIWC hesabı tələb edir. Yalnız layihə sahibi admin rolunu alır.
+
+## Vercel
+
+Adapter hazırlanıb, yeni backend Vercel-də yerləşdirilməyib. BURA üçün ayrıca libSQL bazası və düzgün Vercel layihə bağlantısı lazımdır. Başqa tətbiqin Supabase bazası istifadə edilmir.
+
+1. Node 24 və `npm ci`.
+2. Ayrı boş libSQL/Turso bazasını təmin et; `LIBSQL_URL`, `LIBSQL_AUTH_TOKEN` əlavə et.
+3. `npm run db:remote` ilə schema migrations tətbiq et (əvvəl backup və hədəfi yoxla).
+4. `vercel.json` `build/client` frontend-i və `/api` Node adapterini istifadə edir.
+5. Public launch-dan əvvəl managed auth/email verification/password recovery qoşulmalıdır; private pilot üçün mövcud access protection saxlanmalıdır.
+
+Vercel function forması rəsmi sənədlərə uyğundur: https://vercel.com/docs/functions/runtimes/node-js
+
+## Test
+
+`npm test`: hesab ayrılığı, origin/CSRF, IDOR, təkrar müraciət, tədbir tutumu/ləğv, server-side quiz, anonim rəy moderasiyası, sənəd sahibliyi, təşkilat icazəsi, şifrə sessiyası və restart persistence yoxlanır. Browser QA qeydləri `QA.md` daxilindədir.
+
+PDF şrifti: DejaVu Sans; lisenziya `web/public/fonts/LICENSE.txt`. `pdf-lib`, `fontkit`, `lucide`, `vite`, `esbuild`, `drizzle`, `@libsql/client` öz lisenziyalarına tabedir.
