@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">Qığılcım işarəsi</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#6b2bbd" stroke-width="5.5">
+      <path d="M48 9v19M48 68v19M9 48h19M68 48h19"/>
+      <path d="M20 20l14 14M62 62l14 14M76 20L62 34M34 62L20 76"/>
+      <path d="M31 12l8 18M57 66l8 18M12 31l18 8M66 57l18 8"/>
+      <path d="M65 12l-8 18M39 66l-8 18M12 65l18-8M66 39l18-8"/>
+    </g>
+    <path d="M48 30c10 0 18 8 18 18 0 6-3 11-7 14l8 8" stroke="#f05a24" stroke-width="8"/>
+  </g>
+  <circle cx="48" cy="48" r="7" fill="#ffca3a"/>
+</svg>
