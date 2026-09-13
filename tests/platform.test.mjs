@@ -79,3 +79,13 @@ test('Employers: company profile, verification, job wizard with knockout screeni
  assert.equal((await call('/company','GET',null,'dave')).data.companies[0].role,'owner');
  assert.equal((await call('/companies/socar/claim','POST',{voen:'9900000002',title:'Başqası'},'erin')).status,409);
  db.close()});
+test('AI provider: DeepSeek or OpenAI chosen from env, OpenAI-compatible request, empty JSON answer retried once',async()=>{const {aiConfig,aiChat}=await import('../server/ai.mjs');
+ assert.equal(aiConfig({}),null);assert.equal(aiConfig({OPENAI_API_KEY:'o'}).provider,'openai');assert.equal(aiConfig({DEEPSEEK_API_KEY:'d'}).model,'deepseek-flash');
+ assert.equal(aiConfig({DEEPSEEK_API_KEY:'d',OPENAI_API_KEY:'o'}).provider,'deepseek');assert.equal(aiConfig({DEEPSEEK_API_KEY:'d',OPENAI_API_KEY:'o',AI_PROVIDER:'openai'}).provider,'openai');
+ assert.equal(aiConfig({OPENAI_API_KEY:'o',AI_PROVIDER:'deepseek'}),null);assert.equal(aiConfig({DEEPSEEK_API_KEY:'d',AI_MODEL:'deepseek-v4-pro'}).model,'deepseek-v4-pro');
+ const calls=[];const fetcher=async(url,init)=>{calls.push({url,init});return new Response(JSON.stringify({choices:[{message:{content:calls.length===1?'':'{"ok":true}'}}]}),{status:200})};
+ assert.equal(await aiChat({DEEPSEEK_API_KEY:'secret'},{messages:[{role:'user',content:'json'}],json:true},fetcher),'{"ok":true}');
+ assert.equal(calls.length,2);assert.equal(calls[0].url,'https://api.deepseek.com/chat/completions');assert.equal(calls[0].init.headers.Authorization,'Bearer secret');
+ const body=JSON.parse(calls[0].init.body);assert.equal(body.model,'deepseek-flash');assert.equal(body.response_format.type,'json_object');
+ assert.equal(await aiChat({DEEPSEEK_API_KEY:'secret'},{messages:[]},async()=>new Response('{}',{status:401})),null);
+ const {call,env,db}=fixture();env.DEEPSEEK_API_KEY='secret';assert.equal((await call('/session','GET',null,null)).data.services.ai,true);db.close()});

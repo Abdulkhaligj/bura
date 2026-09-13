@@ -9,3 +9,4 @@ build/
 dist/
 .env
 .claude/
+.local-backup/

@@ -1,3 +1,4 @@
+import {aiChat} from './ai.mjs';
 // Arzu Kompası — girişdən əvvəlki karyera səyahətinin AI addımları.
 // İstemlər yalnız serverdə qurulur; brauzer strukturlaşdırılmış məlumat göndərir, sərbəst istem yox.
 const clip=(x,max)=>typeof x==='string'?x.trim().slice(0,max):'';
@@ -66,14 +67,13 @@ const STEPS={
 };
 export const pusulaSteps=Object.keys(STEPS);
 
-// OpenAI chat completions — mövcud müsahibə adapteri ilə eyni açar və model.
+// server/ai.mjs vasitəsilə OpenAI və ya DeepSeek; testlər fetcher ötürür.
 export async function pusulaAsk(input,env,fetcher=fetch){
  const s=STEPS[input.step];
- const res=await fetcher('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${env.OPENAI_API_KEY}`,'Content-Type':'application/json'},
-  body:JSON.stringify({model:env.OPENAI_MODEL||'gpt-4.1-mini',max_tokens:s.tokens,temperature:input.regen?1:.7,response_format:{type:'json_object'},
-   messages:[{role:'system',content:SYSTEM},{role:'user',content:s.prompt(input)+'\n\nMəlumat:\n'+JSON.stringify(s.data(input))}]})});
- if(!res.ok)return null;
- let out;try{out=s.shape(JSON.parse((await res.json()).choices?.[0]?.message?.content||'{}'))}catch{return null}
+ const text=await aiChat(env,{maxTokens:s.tokens,temperature:input.regen?1:.7,json:true,
+  messages:[{role:'system',content:SYSTEM},{role:'user',content:s.prompt(input)+'\n\nMəlumat (JSON):\n'+JSON.stringify(s.data(input))}]},fetcher);
+ if(!text)return null;
+ let out;try{out=s.shape(JSON.parse(text))}catch{return null}
  return s.ok(out)?out:null;
 }
 

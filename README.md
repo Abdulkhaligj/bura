@@ -56,13 +56,15 @@ Mövcud project ID `.openai/hosting.json` daxilində saxlanır. `npm run build` 
 
 ## Vercel
 
-Adapter hazırlanıb, yeni backend Vercel-də yerləşdirilməyib. BURA üçün ayrıca libSQL bazası və düzgün Vercel layihə bağlantısı lazımdır. Başqa tətbiqin Supabase bazası istifadə edilmir.
+`vercel.json` frontend-i `npm run build:vercel` ilə `build/client`-ə yığır, `/api/*` sorğularını `api/index.mjs` Node funksiyasına yönləndirir. `.openai/hosting.json` repoda olmadığı üçün Vercel-də `npm run build` (Sites build) işləmir.
 
-1. Node 24 və `npm ci`.
-2. Ayrı boş libSQL/Turso bazasını təmin et; `LIBSQL_URL`, `LIBSQL_AUTH_TOKEN` əlavə et.
-3. `npm run db:remote` ilə schema migrations tətbiq et (əvvəl backup və hədəfi yoxla).
-4. `vercel.json` `build/client` frontend-i və `/api` Node adapterini istifadə edir.
-5. Public launch-dan əvvəl managed auth/email verification/password recovery qoşulmalıdır; private pilot üçün mövcud access protection saxlanmalıdır.
+1. Node 24 (`package.json` → `engines`).
+2. Ayrı libSQL/Turso bazası: Vercel → Settings → Environment Variables bölməsinə `LIBSQL_URL` və `LIBSQL_AUTH_TOKEN` əlavə et. Bunlar olmadan sayt açılır, amma API "Məlumat bazası qoşulmayıb" (503) qaytarır.
+3. Lokalda eyni dəyərlərlə `npm run db:remote` — migrations (`0000`, `0001`). Əvvəl backup və hədəfi yoxla.
+4. AI: `DEEPSEEK_API_KEY` və ya `OPENAI_API_KEY`. İkisi də varsa DeepSeek seçilir; `AI_PROVIDER=openai|deepseek` ilə məcbur et, `AI_MODEL` ilə modeli dəyiş (standart: `deepseek-flash` / `gpt-4.1-mini`). Dəyişəndən sonra redeploy lazımdır.
+5. İstəyə bağlı: `BURA_FREE_JOB_LIMIT` (standart 5).
+6. Parol rejimində admin rolu avtomatik verilmir (e-poçt təsdiqi yoxdur). Şirkət təsdiqi üçün etibarlı hesabın `users.role` dəyərini bazada `admin` et.
+7. Public launch-dan əvvəl managed auth/email verification/password recovery qoşulmalıdır; private pilot üçün mövcud access protection saxlanmalıdır.
 
 Vercel function forması rəsmi sənədlərə uyğundur: https://vercel.com/docs/functions/runtimes/node-js
 
