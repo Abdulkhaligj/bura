@@ -24,3 +24,40 @@
 .co-apply-q{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px}.co-apply-q legend{font-weight:600;font-size:14px;padding:0 6px}.co-apply-q .choice{margin:6px 0 0}
 @media(max-width:800px){.co-toolbar{grid-template-columns:1fr 1fr}.co-head h1{font-size:28px}}
 @media(max-width:520px){.co-toolbar{grid-template-columns:1fr}.co-board{grid-template-columns:repeat(6,minmax(78vw,1fr))}}
+
+
+/* Qığılcım primary brand lockup */
+.qigilcim-brand{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:#f05a24;
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:-1.45px;
+  line-height:1;
+  white-space:nowrap;
+}
+.qigilcim-brand img{
+  display:block;
+  width:39px;
+  height:39px;
+  flex:0 0 39px;
+  transition:transform .28s ease;
+}
+.qigilcim-brand span{
+  color:#f05a24;
+  transform:translateY(-1px);
+}
+.qigilcim-brand:hover img{transform:rotate(12deg) scale(1.05)}
+@media(max-width:800px){
+  .qigilcim-brand{font-size:24px}
+  .qigilcim-brand img{width:34px;height:34px;flex-basis:34px}
+}
+@media(max-width:520px){
+  .qigilcim-brand{font-size:21px;gap:6px;letter-spacing:-1px}
+  .qigilcim-brand img{width:31px;height:31px;flex-basis:31px}
+}
+@media(prefers-reduced-motion:reduce){
+  .qigilcim-brand img{transition:none}
+}
